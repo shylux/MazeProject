@@ -12,7 +12,9 @@ public class Launcher {
 			MazeGui.launch();
 		} else {
 			try {
-				Maze2D model = new Maze2D(Paths.get("./mazeData2.csv"));
+				MazeGeneratorDeepFirstRecursive generator = new MazeGeneratorDeepFirstRecursive();
+				Maze2D maze = generator.generate(8,8);
+				new MCPlotter(maze);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -4,10 +4,11 @@ import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 
+import com.shylux.java.maze.Maze2D.Direction;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -16,7 +17,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -37,7 +37,9 @@ public class MazeGui extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		model = new Maze2D(Paths.get("./mazeData2.csv"));
+		MazeGeneratorDeepFirstRecursive generator = new MazeGeneratorDeepFirstRecursive();
+		model = generator.generate(15,15);
+		//model = new Maze2D(Paths.get("./mazeData2.csv"));
 		
 		stage.setTitle("aMAZEing!");
 
@@ -134,10 +136,10 @@ public class MazeGui extends Application {
 					gc.strokeOval(cNode.x*10+2, cNode.y*10+2, 6, 6);
 				} else if (iter.hasNext()) {
 					// normal path
-					gc.setStroke(Color.BLACK);
+					gc.setStroke(Color.WHITE);
 					gc.strokeLine(lastNode.x*10+5, lastNode.y*10+5, cNode.x*10+5, cNode.y*10+5);
 				} else {
-					gc.setStroke(Color.BLACK);
+					gc.setStroke(Color.WHITE);
 					gc.strokeLine(lastNode.x*10+5, lastNode.y*10+5, cNode.x*10+5, cNode.y*10+5);
 					gc.setStroke(Color.RED);
 					gc.strokeRect(cNode.x*10+2, cNode.y*10+2, 6, 6);
@@ -145,14 +147,23 @@ public class MazeGui extends Application {
 			} while (iter.hasNext());
 		}
 		
-		gc.scale(10, 10);
-		gc.setFill(Color.BLACK);
+		gc.setStroke(Color.BLACK);
 		
 		for (int x = 0; x < model.getWidth(); x++) {
 			for (int y = 0; y < model.getHeight(); y++) {
-				ITile tile = model.getTile(x, y);
-				if (!tile.isPassable())
-					gc.fillRect(x, y, 1, 1);
+				Node n = model.getNode(x, y);
+				int ox = n.x*10;
+				int oy = n.y*10;
+				if (!n.isPassable())
+					gc.fillRect(x*10, y*10, 10, 10);
+				if (n.hasWall(Direction.NORTH))
+					gc.strokeLine(ox, oy, ox+10, oy);
+				if (n.hasWall(Direction.SOUTH))
+					gc.strokeLine(ox, oy+10, ox+10, oy+10);
+				if (n.hasWall(Direction.EAST))
+					gc.strokeLine(ox+10, oy, ox+10, oy+10);
+				if (n.hasWall(Direction.WEST))
+					gc.strokeLine(ox, oy, ox, oy+10);
 			}
 		}
 		

@@ -3,7 +3,11 @@ package com.shylux.java.maze;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.shylux.java.maze.Maze2D.Direction;
+
 public class MazeSolverRecursive implements IMazeSolver {
+	
+	Maze2D mz;
 
 	public String toString() {
 		return "Recursive Search";
@@ -11,6 +15,7 @@ public class MazeSolverRecursive implements IMazeSolver {
 	
 	@Override
 	public List<Node> solve(Maze2D maze, Node startNode) {
+		mz = maze;
 		if (!startNode.isPassable()) return null;
 		try {
 			return checkNode(new ArrayList<Node>(), startNode);
@@ -20,16 +25,17 @@ public class MazeSolverRecursive implements IMazeSolver {
 	}
 	
 	public List<Node> checkNode(List<Node> path, Node node) {
-		if (node.getTile() instanceof OutsideTile) {
-			return path;
-		}
-		
 		List<Node> exPath = new ArrayList<Node>(path);
 		exPath.add(node);
 		
-		for (Node n: node.getNeighbours()) {
+		if (node.isExitNode()) {
+			return exPath;
+		}
+		
+		for (Direction d: Direction.values()) {
+			Node n = mz.getNode(node, d);
 			if (exPath.contains(n)) continue;
-			if (!n.isPassable()) continue;
+			if (!node.isPassable(d)) continue;
 	
 			List<Node> npath = checkNode(exPath, n);
 			if (npath != null) return npath;

@@ -34,7 +34,7 @@ public class MazeSolverBreadthFirst implements IMazeSolver {
 			int curCost = cost[n.x][n.y] + 1;
 			for (Direction d: Direction.values()) {
 				Node e = maze.getNode(n.x+d.x, n.y+d.y);
-				if (!e.isPassable()) continue;
+				if (!n.isPassable(d)) continue;
 				if (e.getTile() instanceof OutsideTile) continue;
 				if (curCost < cost[e.x][e.y]) {
 					cost[e.x][e.y] = curCost;
